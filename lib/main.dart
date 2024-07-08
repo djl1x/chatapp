@@ -1,6 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
-import 'package:chatapp/auth/auth_gate.dart';
+import 'package:chatapp/services/auth/auth_gate.dart';
 import 'package:chatapp/theme/light_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';

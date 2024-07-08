@@ -1,4 +1,4 @@
-import 'package:chatapp/auth/LoginOrRegister.dart';
+import 'package:chatapp/services/auth/LoginOrRegister.dart';
 import 'package:chatapp/view/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,7 +16,7 @@ class AuthGate extends StatelessWidget {
             return HomePage();
           }
           else {
-            return LoginOrRegister();
+            return const LoginOrRegister();
           }
         },
       ) 
