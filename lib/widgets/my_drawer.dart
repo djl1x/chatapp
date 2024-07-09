@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
 import 'package:chatapp/services/auth/auth_service.dart';
+import 'package:chatapp/view/create_group.dart';
 import 'package:chatapp/view/home_page.dart';
 import 'package:chatapp/view/settings_page.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +45,18 @@ class MyDrawer extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (context) => SettingsPage()));
                   },
                 ),
-              ), 
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 25.0),
+                child: ListTile(
+                  title: Text('C R E A T E G R O U P'),
+                  leading: Icon(Icons.group),
+                  onTap: (){
+                    Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => CreateGroupPage()));
+                  },
+                ),
+              ),  
             ],
           ),
           Padding(

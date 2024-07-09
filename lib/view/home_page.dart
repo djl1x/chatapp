@@ -19,24 +19,42 @@ class HomePage extends StatelessWidget {
       ),
       drawer: const MyDrawer(),
 
-      body: _buildUserList(),
+      body: _buildChatList(),
     );
   }
 
-  Widget _buildUserList() {
+  Widget _buildChatList() {
     return StreamBuilder(
       stream: _chatService.getUsersStream(), 
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
+      builder: (context, userSnapshot) {
+        if (userSnapshot.hasError) {
           return const Text("Error retrieving users");
         }
         
-        if (snapshot.connectionState == ConnectionState.waiting){
+        if (userSnapshot.connectionState == ConnectionState.waiting){
           return const Text("Loading . . .");
         }
 
-        return ListView(
-          children: snapshot.data!.map<Widget>((userData) => _buildUserListItem(userData, context)).toList(),
+        return StreamBuilder(
+          stream: _chatService.getGroupsStream(),
+          builder: (context, groupSnapshot) {
+            if (groupSnapshot.hasError) {
+              return const Text("Error retrieving groups");
+            }
+
+            if (groupSnapshot.connectionState == ConnectionState.waiting) {
+              return const Text("Loading groups . . .");
+            }
+
+            List<Widget> chatListItems = [
+              ...userSnapshot.data!.map<Widget>((userData) => _buildUserListItem(userData, context)).toList(),
+              ...groupSnapshot.data!.map<Widget>((groupData) => _buildGroupListItem(groupData, context)).toList(),
+            ];
+
+             return ListView(
+              children: chatListItems,
+            );
+          },
         );
       }
       );
@@ -55,5 +73,22 @@ class HomePage extends StatelessWidget {
     else {
       return Container();
     }
+  }
+
+  Widget _buildGroupListItem(Map<String, dynamic> groupData, BuildContext context) {
+    return UserTile(
+      text: groupData["groupName"],
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              groupId: groupData['groupId'],
+              groupName: groupData['groupName'],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
