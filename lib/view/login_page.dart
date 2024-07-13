@@ -28,6 +28,10 @@ class LoginPage extends StatelessWidget {
     }
   }
 
+  void signInWithGoogle(BuildContext context) async {
+    final authService = AuthService();
+    authService.signInWithGoogle();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,6 +64,11 @@ class LoginPage extends StatelessWidget {
               MyButton(
                 text: "Login",
                 onTap: () => login(context)
+              ),
+              SizedBox(height: 30,),
+              MyButton(
+                text: "Sign in with Google",
+                onTap: () => signInWithGoogle(context)
               ),
               SizedBox(height: 30,),
               Row(

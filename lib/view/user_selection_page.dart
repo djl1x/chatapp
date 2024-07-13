@@ -1,4 +1,6 @@
+import 'package:chatapp/services/auth/auth_service.dart';
 import 'package:chatapp/services/chat/chat_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class UserSelectionPage extends StatefulWidget {
@@ -8,6 +10,8 @@ class UserSelectionPage extends StatefulWidget {
 
 class _UserSelectionPageState extends State<UserSelectionPage> {
   List<String> selectedUsers = [];
+
+  AuthService _auth = AuthService();
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +48,7 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
               final user = users[index];
               final userId = user['uid'];
               final userName = user['email'];
-
+              
               return ListTile(
                 title: Text(userName),
                 trailing: Checkbox(

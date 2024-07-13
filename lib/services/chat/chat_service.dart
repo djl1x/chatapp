@@ -1,10 +1,18 @@
+import 'dart:io';
+
 import 'package:chatapp/models/message.dart';
 import 'package:chatapp/services/auth/auth_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cross_file/cross_file.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 
 class ChatService {
   // FIRESTORE INSTACE INITIALIZATION
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // FIREBASE STORAGE INIT
+  final FirebaseStorage _storage = FirebaseStorage.instance;
+
   final AuthService _auth = AuthService();
   
   //
@@ -17,7 +25,7 @@ class ChatService {
     });
   }
 
-  Future<void> sendMessage(String receiverID, message) async {
+  Future<void> sendMessage(String receiverID, message, String? mediaUrl, String? mediaType) async {
     //current user info
     final String currentUserID = _auth.getCurrentUser()!.uid;
     final String currentUserEmail = _auth.getCurrentUser()!.email!;
@@ -28,7 +36,10 @@ class ChatService {
       senderEmail: currentUserEmail, 
       receiverID: receiverID, 
       message: message, 
-      timeStamp: timeStamp);
+      timeStamp: timeStamp,
+      mediaUrl: mediaUrl,
+      mediaType: mediaType
+      );
     //create chatroom with unique ID
     List<String> ids = [currentUserID, receiverID];
     ids.sort();
@@ -37,7 +48,7 @@ class ChatService {
     await _firestore.collection('chatrooms').doc(chatRoomID).collection('messages').add(newMessage.toMap());
   }
 
-  Future<void> sendGroupMessage(String groupId, String message) async {
+  Future<void> sendGroupMessage(String groupId, String message, String? mediaUrl, String? mediaType) async {
     final String currentUserID = _auth.getCurrentUser()!.uid;
     final String currentUserEmail = _auth.getCurrentUser()!.email!;
     final Timestamp timeStamp = Timestamp.now();
@@ -48,6 +59,8 @@ class ChatService {
       receiverID: groupId,
       message: message,
       timeStamp: timeStamp,
+      mediaUrl: mediaUrl,
+      mediaType: mediaType
     );
 
     await _firestore.collection('groups').doc(groupId).collection('messages').add(newMessage.toMap());
@@ -78,6 +91,7 @@ class ChatService {
     });
   }
 
+  
   Stream<List<Map<String, dynamic>>> getGroupsStream() {
     final String currentUserID = _auth.getCurrentUser()!.uid;
     return _firestore.collection("groups")
@@ -93,6 +107,20 @@ class ChatService {
 
   Stream<QuerySnapshot> getGroupMessages(String groupId) {
     return _firestore.collection('groups').doc(groupId).collection('messages').orderBy('timeStamp', descending: false).snapshots();
+  }
+
+  // GET MEDIA URL
+  Future<String?> uploadMedia(XFile media, String type) async {
+    try {
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      Reference reference = _storage.ref().child('$type/$fileName');
+      UploadTask uploadTask = reference.putFile(File(media.path));
+      TaskSnapshot snapshot = await uploadTask;
+      return await snapshot.ref.getDownloadURL();
+    } catch (e) {
+      print(e);
+      return null;
+    }
   }
 
 } 

@@ -4,10 +4,11 @@ import 'package:chatapp/services/auth/auth_service.dart';
 import 'package:chatapp/services/chat/chat_service.dart';
 import 'package:chatapp/widgets/chat_bubble.dart';
 import 'package:chatapp/widgets/my_textfield.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
+
 
 class ChatPage extends StatefulWidget {
   final String? receiverUserEmail;
@@ -26,20 +27,46 @@ class _ChatPageState extends State<ChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final ChatService _chatService = ChatService();
   final AuthService _auth = AuthService();
+  final ImagePicker _picker = ImagePicker();
   
-  void _sendMessage() async {
-    if (_messageController.text.isEmpty) return;
+  void _sendMessage({String? mediaUrl, String? mediaType}) async {
+    if (_messageController.text.isEmpty && mediaUrl == null) return;
 
     if (widget.groupId != null) {
       // Handle group messages
-      await _chatService.sendGroupMessage(widget.groupId!, _messageController.text);
+      await _chatService.sendGroupMessage(widget.groupId!, _messageController.text, mediaUrl, mediaType);
     } else {
       // Handle direct messages
-      await _chatService.sendMessage(widget.receiverUserID!, _messageController.text);
+      await _chatService.sendMessage(widget.receiverUserID!, _messageController.text, mediaUrl, mediaType);
     }
 
     _messageController.clear();
   }
+
+  Future<void> _pickMedia(ImageSource source, String type) async {
+    var status = await Permission.storage.request();
+    if (status.isGranted) {
+      XFile? media;
+      if (type == 'image') {
+        media = await _picker.pickImage(source: source);
+      } else if (type == 'video') {
+        media = await _picker.pickVideo(source: source);
+      }
+
+    if (media != null) {
+      String? mediaUrl = await _chatService.uploadMedia(media, type);
+      if (mediaUrl != null) {
+        _sendMessage(mediaUrl: mediaUrl, mediaType: type);
+      }
+    }
+    }
+    else{
+      print('Permission Denied');
+    }
+    
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -54,6 +81,8 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   Widget _buildMessages() {
+
+    // GROUP MESSAGE DISPLAY
     if (widget.groupId != null) {
       return StreamBuilder(
         stream: _chatService.getGroupMessages(widget.groupId!),
@@ -73,11 +102,14 @@ class _ChatPageState extends State<ChatPage> {
                 senderEmail: messageData['senderEmail'],
                 message: messageData['message'],
                 isMe: messageData['senderID'] == _auth.getCurrentUser()!.uid,
+                mediaUrl: messageData['mediaUrl'],
+                mediaType: messageData['mediaType'],
               );
             }).toList(),
           );
         },
       );
+      // DIRECT MESSAGE DISPLAY
     } else {
       return StreamBuilder(
         stream: _chatService.getMessages(widget.receiverUserID!, _auth.getCurrentUser()!.uid),
@@ -97,6 +129,8 @@ class _ChatPageState extends State<ChatPage> {
                 senderEmail: messageData['senderEmail'],
                 message: messageData['message'],
                 isMe: messageData['senderID'] == _auth.getCurrentUser()!.uid,
+                mediaUrl: messageData['mediaUrl'],
+                mediaType: messageData['mediaType'],
               );
             }).toList(),
           );
@@ -110,6 +144,14 @@ class _ChatPageState extends State<ChatPage> {
       padding: const EdgeInsets.all(15.0),
       child: Row(
         children: [
+          IconButton(
+            icon: Icon(Icons.image),
+            onPressed: () => _pickMedia(ImageSource.gallery, 'image'),
+          ),
+          IconButton(
+            icon: Icon(Icons.video_library),
+            onPressed: () => _pickMedia(ImageSource.gallery, 'video'),
+          ),
           Expanded(
             child: MyTextField(labelText: 'send a message', obscureText: false, controller: _messageController)
           ),
