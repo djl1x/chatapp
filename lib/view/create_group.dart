@@ -6,6 +6,7 @@ import 'package:chatapp/widgets/my_button.dart';
 import 'package:chatapp/widgets/my_textfield.dart';
 import 'package:flutter/material.dart';
 
+// PAGE FOR CREATING GROUP
 class CreateGroupPage extends StatefulWidget {
   CreateGroupPage({super.key});
 

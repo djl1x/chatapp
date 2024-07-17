@@ -3,6 +3,7 @@ import 'package:chatapp/services/chat/chat_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+// PAGE TO SELECT USERS WHEN CREATING A GROUP
 class UserSelectionPage extends StatefulWidget {
   @override
   _UserSelectionPageState createState() => _UserSelectionPageState();
@@ -30,6 +31,7 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
         ],
       ),
       body: StreamBuilder<List<Map<String, dynamic>>>(
+        // LOAD USERS IN
         stream: chatService.getUsersStream(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -53,6 +55,7 @@ class _UserSelectionPageState extends State<UserSelectionPage> {
                 title: Text(userName),
                 trailing: Checkbox(
                   value: selectedUsers.contains(userId),
+                  // IF SELECTED ADD THE USERS TO THE SELECTED LIST
                   onChanged: (isSelected) {
                     setState(() {
                       if (isSelected == true) {

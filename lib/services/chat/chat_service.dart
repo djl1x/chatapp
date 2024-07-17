@@ -15,7 +15,7 @@ class ChatService {
 
   final AuthService _auth = AuthService();
   
-  //
+  // GET USER LIST
   Stream <List<Map<String, dynamic>>> getUsersStream(){
     return _firestore.collection("Users").snapshots().map((snapshot) {
       return snapshot.docs.map((doc){
@@ -23,8 +23,9 @@ class ChatService {
         return user;
       }).toList();
     });
-  }
+  } 
 
+  // SEND DM MESSAGES
   Future<void> sendMessage(String receiverID, message, String? mediaUrl, String? mediaType) async {
     //current user info
     final String currentUserID = _auth.getCurrentUser()!.uid;
@@ -40,7 +41,7 @@ class ChatService {
       mediaUrl: mediaUrl,
       mediaType: mediaType
       );
-    //create chatroom with unique ID
+    //create chatroom with unique ID (user1uid_user2uid)
     List<String> ids = [currentUserID, receiverID];
     ids.sort();
     String chatRoomID = ids.join('_');
@@ -48,6 +49,7 @@ class ChatService {
     await _firestore.collection('chatrooms').doc(chatRoomID).collection('messages').add(newMessage.toMap());
   }
 
+  // SEND GROUP MESSAGES
   Future<void> sendGroupMessage(String groupId, String message, String? mediaUrl, String? mediaType) async {
     final String currentUserID = _auth.getCurrentUser()!.uid;
     final String currentUserEmail = _auth.getCurrentUser()!.email!;
@@ -66,6 +68,7 @@ class ChatService {
     await _firestore.collection('groups').doc(groupId).collection('messages').add(newMessage.toMap());
   }
   
+  // GET DM MESSAGES
   Stream<QuerySnapshot> getMessages(String userID, String otherUserID){
     List<String> ids = [userID, otherUserID];
     ids.sort();
@@ -74,7 +77,7 @@ class ChatService {
     return _firestore.collection('chatrooms').doc(chatRoomID).collection('messages').orderBy('timeStamp', descending: false).snapshots();
   }
 
-
+  // CREATE GROUP CHAT
   Future<void> createGroup(String groupName, List<String> memberIds) async {
     final String currentUserID = _auth.getCurrentUser()!.uid;
     memberIds.add(currentUserID);
@@ -91,7 +94,7 @@ class ChatService {
     });
   }
 
-  
+  // GET GROUPS LIST
   Stream<List<Map<String, dynamic>>> getGroupsStream() {
     final String currentUserID = _auth.getCurrentUser()!.uid;
     return _firestore.collection("groups")
@@ -105,6 +108,7 @@ class ChatService {
     });
   }
 
+  // RETRIEVE GROUP MESSAGES
   Stream<QuerySnapshot> getGroupMessages(String groupId) {
     return _firestore.collection('groups').doc(groupId).collection('messages').orderBy('timeStamp', descending: false).snapshots();
   }

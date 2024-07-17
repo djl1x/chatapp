@@ -14,6 +14,7 @@ class LoginPage extends StatelessWidget {
 
   final TextEditingController _passwordController = TextEditingController();
 
+  // NORMAL LOGIN
   void login(BuildContext context) async {
     print('Button tapped');
     final authService = AuthService();
@@ -28,10 +29,12 @@ class LoginPage extends StatelessWidget {
     }
   }
 
+  // SIGN IN WITH GOOGLE
   void signInWithGoogle(BuildContext context) async {
     final authService = AuthService();
     authService.signInWithGoogle();
   }
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(

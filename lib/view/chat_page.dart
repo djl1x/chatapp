@@ -43,6 +43,7 @@ class _ChatPageState extends State<ChatPage> {
     _messageController.clear();
   }
 
+  // FUNCTION FOR OPENING GALLERY AND PICKING IMAGE OR VIDEO AND SENDING IT
   Future<void> _pickMedia(ImageSource source, String type) async {
     var status = await Permission.storage.request();
     if (status.isGranted) {

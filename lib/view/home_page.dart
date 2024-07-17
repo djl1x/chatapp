@@ -23,6 +23,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  // BUILD THE CHAT LIST
   Widget _buildChatList() {
     return StreamBuilder(
       stream: _chatService.getUsersStream(), 
@@ -59,6 +60,8 @@ class HomePage extends StatelessWidget {
       }
       );
   }
+
+  // BUILD USER CARD
   Widget _buildUserListItem(Map<String, dynamic> userData, BuildContext context){
     if (userData["email"] != _authService.getCurrentUser()!.email){
     return UserTile(
@@ -74,7 +77,8 @@ class HomePage extends StatelessWidget {
       return Container();
     }
   }
-
+  
+  // BUILD GROUP CARD
   Widget _buildGroupListItem(Map<String, dynamic> groupData, BuildContext context) {
     return UserTile(
       text: groupData["groupName"],

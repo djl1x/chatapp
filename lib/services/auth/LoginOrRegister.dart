@@ -18,6 +18,8 @@ class _LoginOrRegisterState extends State<LoginOrRegister> {
       showLoginPage = !showLoginPage;
     });
   }
+
+  // TRANSITION BETWEEN LOGIN AND REGISTER PAGE
   @override
   Widget build(BuildContext context) {
     if (showLoginPage) {

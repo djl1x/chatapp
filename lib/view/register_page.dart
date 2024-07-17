@@ -16,6 +16,7 @@ class RegisterPage extends StatelessWidget {
 
   final TextEditingController _confirmPasswordController = TextEditingController();
 
+  // REGISTER FUNCTION, CALLS AUTHSERVICE AND SIGNUP
   void register(BuildContext context) async{
     AuthService _auth = AuthService();
     if (_passwordController.text == _confirmPasswordController.text){
@@ -34,6 +35,8 @@ class RegisterPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
+      // REGISTER FORM
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(20.0),

@@ -6,6 +6,7 @@ class AuthService{
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // GET CURRENT SIGNED IN USER
   User? getCurrentUser() {
     return _auth.currentUser;
   }
@@ -47,6 +48,7 @@ class AuthService{
     }
   }
 
+  // SIGN IN WITH GOOGLE PROVIDER
   signInWithGoogle() async {
     final GoogleSignInAccount? gUser = await GoogleSignIn().signIn();
 

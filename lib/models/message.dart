@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
+// MESSAGE MODEL TO STORE IN FIRESTORE
 class Message {
   final String senderID;
   final String senderEmail;

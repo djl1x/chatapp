@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+// INCOMPLETE LIGHT MODE / DARK MODE
 ThemeData lightMode = ThemeData(
   colorScheme: ColorScheme.light(
     surface: Colors.grey.shade300,

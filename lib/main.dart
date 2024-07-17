@@ -5,6 +5,7 @@ import 'package:chatapp/theme/light_mode.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 
 void main() async {
@@ -12,6 +13,19 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // FOR TESTING AND LOGGING
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Received a message');
+    print('Message data: ${message.data}');
+
+    if (message.notification != null) {
+      print('Message also contained a notification: ${message.notification}');
+    }
+  });
+
   runApp(const MyApp());
 }
 class MyApp extends StatelessWidget {
